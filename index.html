@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customer Churn Prediction Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1e293b;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            padding: 28px 20px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 45px;
+        }
+
+        .logo span {
+            color: #6366f1;
+        }
+
+        .menu-item {
+            padding: 14px 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            color: #cbd5e1;
+        }
+
+        .menu-item.active {
+            background: #4f46e5;
+            color: white;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 {
+            font-size: 28px;
+        }
+
+        .topbar p {
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .status {
+            background: #dcfce7;
+            color: #166534;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* STAT CARDS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* CONTENT GRID */
+
+        .content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+        }
+
+        .card-title {
+            margin-bottom: 22px;
+        }
+
+        .card-title h2 {
+            font-size: 20px;
+        }
+
+        .card-title p {
+            color: #64748b;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* FORM */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input {
+            padding: 13px;
+            border: 1px solid #dbe2ea;
+            border-radius: 9px;
+            font-size: 15px;
+            background: #f8fafc;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .help {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+
+        /* BUTTON */
+
+        .predict-btn {
+            width: 100%;
+            margin-top: 25px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #4f46e5;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .predict-btn:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+        }
+
+        .predict-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* RESULT */
+
+        .result-card {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .result-icon {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            background: #eef2ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        .result-card h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .result-card p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .churn-result {
+            color: #dc2626;
+        }
+
+        .stay-result {
+            color: #16a34a;
+        }
+
+        .result-details {
+            margin-top: 20px;
+            width: 100%;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .result-details span {
+            display: block;
+            color: #64748b;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .result-details strong {
+            font-size: 15px;
+        }
+
+        /* FOOTER */
+
+        .footer {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 30px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1000px) {
+
+            .sidebar {
+                width: 200px;
+            }
+
+            .main {
+                margin-left: 200px;
+            }
+
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            Churn<span>AI</span>
+        </div>
+
+        <div class="menu-item active">
+            📊 Dashboard
+        </div>
+
+        <div class="menu-item">
+            👤 Customer Prediction
+        </div>
+
+        <div class="menu-item">
+            🤖 ML Model
+        </div>
+
+        <div class="menu-item">
+            📈 Analytics
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div>
+                <h1>Customer Churn Dashboard</h1>
+                <p>Machine Learning powered telecom customer analysis</p>
+            </div>
+
+            <div class="status">
+                ● Model Online
+            </div>
+
+        </div>
+
+
+        <!-- STAT CARDS -->
+
+        <div class="stats">
+
+            <div class="stat-card">
+                <h3>Model</h3>
+                <p>Gradient Boosting</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Model ROC-AUC</h3>
+                <p>82.92%</p>
+            </div>
+
+            <div class="stat-card">
+                <h3>Features Used</h3>
+                <p>5</p>
+            </div>
+
+        </div>
+
+
+        <!-- CONTENT -->
+
+        <div class="content">
+
+            <!-- INPUT CARD -->
+
+            <div class="card">
+
+                <div class="card-title">
+                    <h2>Customer Information</h2>
+                    <p>Enter customer details to generate a churn prediction.</p>
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="SeniorCitizen">
+                            Senior Citizen
+                        </label>
+
+                        <input
+                            type="number"
+                            id="SeniorCitizen"
+                            min="0"
+                            max="1"
+                            placeholder="0 or 1"
+                        >
+
+                        <span class="help">
+                            0 = No, 1 = Yes
+                        </span>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="tenure">
+                            Tenure
+                        </label>
+
+                        <input
+                            type="number"
+                            id="tenure"
+                            min="0"
+                            placeholder="Months"
+                        >
+
+                        <span class="help">
+                            Number of months with company
+                        </span>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="MonthlyCharges">
+                            Monthly Charges
+                        </label>
+
+                        <input
+                            type="number"
+                            id="MonthlyCharges"
+                            step="0.01"
+                            min="0"
+                            placeholder="₹ Monthly charges"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="TotalCharges">
+                            Total Charges
+                        </label>
+
+                        <input
+                            type="number"
+                            id="TotalCharges"
+                            step="0.01"
+                            min="0"
+                            placeholder="₹ Total charges"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="predict-btn"
+                    id="predictButton"
+                    onclick="predictChurn()"
+                >
+                    🔮 Predict Customer Churn
+                </button>
+
+            </div>
+
+
+            <!-- RESULT CARD -->
+
+            <div class="card result-card" id="resultCard">
+
+                <div class="result-icon">
+                    🤖
+                </div>
+
+                <h2>Prediction Ready</h2>
+
+                <p>
+                    Enter the customer information and click
+                    <strong>Predict Customer Churn</strong>
+                    to generate a prediction.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer">
+            Customer Churn Prediction • Machine Learning Deployment Project
+        </div>
+
+    </main>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+
+        async function predictChurn() {
+
+            const seniorCitizen =
+                document.getElementById("SeniorCitizen").value;
+
+            const tenure =
+                document.getElementById("tenure").value;
+
+            const monthlyCharges =
+                document.getElementById("MonthlyCharges").value;
+
+            const totalCharges =
+                document.getElementById("TotalCharges").value;
+
+
+            if (
+                seniorCitizen === "" ||
+                tenure === "" ||
+                monthlyCharges === "" ||
+                totalCharges === ""
+            ) {
+
+                alert("Please enter all customer details.");
+
+                return;
+            }
+
+
+            const totalChargesValue =
+                Number(totalCharges);
+
+
+            const totalChargesLog =
+                Math.log1p(totalChargesValue);
+
+
+            const data = {
+
+                SeniorCitizen:
+                    Number(seniorCitizen),
+
+                tenure:
+                    Number(tenure),
+
+                MonthlyCharges:
+                    Number(monthlyCharges),
+
+                TotalCharges:
+                    totalChargesValue,
+
+                TotalCharges_log:
+                    totalChargesLog
+            };
+
+
+            const button =
+                document.getElementById("predictButton");
+
+            const resultCard =
+                document.getElementById("resultCard");
+
+
+            button.disabled = true;
+
+            button.innerText = "⏳ Predicting...";
+
+
+            resultCard.innerHTML = `
+                <div class="result-icon">
+                    ⏳
+                </div>
+
+                <h2>Analyzing Customer...</h2>
+
+                <p>
+                    The machine learning model is generating
+                    the prediction.
+                </p>
+            `;
+
+
+            try {
+
+                const response =
+                    await fetch("/predict", {
+
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+
+                        body: JSON.stringify(data)
+
+                    });
+
+
+                const result =
+                    await response.json();
+
+
+                if (result.prediction === 1) {
+
+                    resultCard.innerHTML = `
+
+                        <div class="result-icon">
+                            🔴
+                        </div>
+
+                        <h2 class="churn-result">
+                            Likely to Churn
+                        </h2>
+
+                        <p>
+                            The model predicts that this customer
+                            may leave the telecom service.
+                        </p>
+
+                        <div class="result-details">
+
+                            <span>
+                                Prediction
+                            </span>
+
+                            <strong>
+                                Churn = 1
+                            </strong>
+
+                        </div>
+
+                    `;
+
+                } else {
+
+                    resultCard.innerHTML = `
+
+                        <div class="result-icon">
+                            🟢
+                        </div>
+
+                        <h2 class="stay-result">
+                            Likely to Stay
+                        </h2>
+
+                        <p>
+                            The model predicts that this customer
+                            is likely to remain with the telecom service.
+                        </p>
+
+                        <div class="result-details">
+
+                            <span>
+                                Prediction
+                            </span>
+
+                            <strong>
+                                Churn = 0
+                            </strong>
+
+                        </div>
+
+                    `;
+                }
+
+
+            } catch (error) {
+
+                resultCard.innerHTML = `
+
+                    <div class="result-icon">
+                        ⚠️
+                    </div>
+
+                    <h2>
+                        Prediction Error
+                    </h2>
+
+                    <p>
+                        Unable to connect to the prediction API.
+                        Please make sure the Flask server is running.
+                    </p>
+
+                `;
+
+            }
+
+
+            button.disabled = false;
+
+            button.innerText =
+                "🔮 Predict Customer Churn";
+
+        }
+
+    </script>
+
+</body>
+</html>

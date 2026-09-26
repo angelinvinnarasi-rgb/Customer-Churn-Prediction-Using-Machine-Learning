@@ -202,15 +202,9 @@ POST /predict
 - `0` → Customer is predicted to stay
 - `1` → Customer is predicted to churn
 
-The Flask API successfully accepts customer information through a POST request and returns the predicted churn class as a JSON response.
-
 ---
 
 ## Docker Containerization
-
-### Dockerfile
-
-A Dockerfile was created in the main project folder to containerize the Flask application.
 
 ### Build Docker Image
 
@@ -226,8 +220,6 @@ docker run -p 5000:5000 customer-churn-prediction
 
 ### API Testing
 
-The Dockerized API was successfully tested using Postman.
-
 **API URL:**
 
 ```text
@@ -241,6 +233,20 @@ http://127.0.0.1:5000/predict
     "prediction": 0
 }
 ```
+
+### Screenshot Evidence
+
+#### Docker Build Success
+
+![Docker Build Success](outputs/docker_build_success.png)
+
+#### Docker Run Success
+
+![Docker Run Success](outputs/docker_run_success.png)
+
+#### API Testing Output
+
+![API Testing Output](outputs/api_testing_output.png)
 
 ---
 
@@ -289,6 +295,11 @@ Customer_Churn_Prediction/
 ├── notebooks/
 │   └── customer churn prediction.ipynb
 │
+├── outputs/
+│   ├── docker_build_success.png
+│   ├── docker_run_success.png
+│   └── api_testing_output.png
+│
 ├── templates/
 │   └── index.html
 │
@@ -325,5 +336,8 @@ Customer_Churn_Prediction/
 
 **Batch:** DS AN B03
 
-**Submission Date:** 26/09/2026/2026
+**Program:** Data Science Mini Project
 
+**Project Title:** Customer Churn Prediction Using Machine Learning
+
+**Submission Date:** 26/09/2026
