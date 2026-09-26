@@ -170,3 +170,160 @@ The trained Gradient Boosting model was exported as:
 
 ```text
 models/gradient_boosting_model.pkl
+
+### API Endpoint
+
+```http
+POST /predict
+```
+
+### Sample Request
+
+```json
+{
+    "SeniorCitizen": 0,
+    "tenure": 24,
+    "MonthlyCharges": 70.50,
+    "TotalCharges": 1692.00,
+    "TotalCharges_log": 7.44
+}
+```
+
+### Sample Response
+
+```json
+{
+    "prediction": 0
+}
+```
+
+### Prediction Meaning
+
+- `0` → Customer is predicted to stay
+- `1` → Customer is predicted to churn
+
+The Flask API successfully accepts customer information through a POST request and returns the predicted churn class as a JSON response.
+
+---
+
+## Docker Containerization
+
+### Dockerfile
+
+A Dockerfile was created in the main project folder to containerize the Flask application.
+
+### Build Docker Image
+
+```bash
+docker build -t customer-churn-prediction .
+```
+
+### Run Docker Container
+
+```bash
+docker run -p 5000:5000 customer-churn-prediction
+```
+
+### API Testing
+
+The Dockerized API was successfully tested using Postman.
+
+**API URL:**
+
+```text
+http://127.0.0.1:5000/predict
+```
+
+**Test Response:**
+
+```json
+{
+    "prediction": 0
+}
+```
+
+---
+
+## Installation & Setup
+
+### Clone Repository
+
+```bash
+git clone <repository-url>
+cd Customer_Churn_Prediction
+```
+
+### Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Run Application
+
+#### Flask
+
+```bash
+python app.py
+```
+
+The Flask application runs on:
+
+```text
+http://127.0.0.1:5000
+```
+
+---
+
+## Project Structure
+
+```text
+Customer_Churn_Prediction/
+│
+├── data/
+│   └── Telco-Customer-Churn.csv
+│
+├── models/
+│   └── gradient_boosting_model.pkl
+│
+├── notebooks/
+│   └── customer churn prediction.ipynb
+│
+├── templates/
+│   └── index.html
+│
+├── app.py
+├── Dockerfile
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Results
+
+- Evaluated multiple classification models using Accuracy, Precision, Recall, F1 Score, and ROC-AUC.
+- Gradient Boosting achieved a ROC-AUC of **82.92%** and an F1 Score of **55.79%**.
+- Successfully exported the trained model as a `.pkl` file.
+- Successfully developed and tested the Flask REST API.
+- Successfully containerized the application using Docker.
+
+---
+
+## Future Improvements
+
+- Add more customer and service-related data.
+- Try advanced machine learning algorithms.
+- Deploy on cloud platforms.
+- Implement model monitoring and automatic retraining.
+
+---
+
+## Author
+
+**Student Name:** Elaiyarasi E
+
+**Batch:** DS AN B03
+
+**Submission Date:** 26/09/2026/2026
+
